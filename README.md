@@ -193,7 +193,7 @@ API 응답 구조:
 
 과제 제출 방법:
 1. 이 리포지토리를 클론합니다.
-2. 'main' 브랜치에서 본인의 영문 이름으로 새 브랜치를 생성합니다. (예: 'git checkout -b john-doe')
+2. 'live' 브랜치에서 본인의 영문 이름으로 새 브랜치를 생성합니다. (예: 'git checkout -b john-doe')
 3. 해당 브랜치에서 과제를 수행합니다.
 4. 작업이 완료되면 해당 브랜치를 push하고, Pull Request를 생성합니다.
 5. Pull Request 링크를 제출합니다.
