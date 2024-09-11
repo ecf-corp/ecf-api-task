@@ -1,16 +1,17 @@
-Nest.js와 PostgreSQL을 이용한 e-commerce API 개발 과제
+Nest.js와 PostgreSQL을 이용한 e-commerce API 개발 실습
 
-과제 개요:
-이 과제는 Nest.js와 PostgreSQL을 사용하여 간단한 e-commerce API를 개발하는 것입니다. Prisma ORM을 사용하여 데이터베이스를 관리하고, RESTful API 원칙을 따라 개발해야 합니다.
+목적:
+이 실습 프로젝트는 우리 팀에서 사용하는 주요 기술 스택인 Nest.js, PostgreSQL, 그리고 Prisma ORM을 실제로 경험해보고 학습하는 것을 목표로 합니다. 간단한 e-commerce API를 구현하면서 이러한 기술들을 어떻게 효과적으로 활용할 수 있는지 직접 체험해볼 수 있습니다.
 
 기간: 1주 (7일)
 
-기술 요구사항:
-1. Nest.js 프레임워크 사용
-2. PostgreSQL 데이터베이스 사용
-3. Prisma ORM을 이용한 데이터베이스 연동
+학습 목표:
+1. Nest.js 프레임워크의 기본 구조와 사용법 익히기
+2. PostgreSQL 데이터베이스와 Prisma ORM을 통한 데이터 관리 방법 이해하기
+3. RESTful API 설계 및 구현 능력 향상
+4. 실제 프로젝트와 유사한 환경에서의 개발 경험 쌓기
 
-API 요구사항:
+구현할 API 기능:
 
 1. 상품 관리
    - POST /products: 새 상품 생성
@@ -191,10 +192,95 @@ API 응답 구조:
 
 참고: 이 정보는 회사 내부용이므로 외부에 공유하지 마세요.
 
-과제 제출 방법:
+Prisma 시딩:
+초기 데이터 설정을 위해 Prisma의 seeding 기능을 사용합니다. 이를 통해 데이터베이스 작업의 기본을 익힐 수 있습니다.
+
+Prisma Seeding 사용하기:
+Prisma의 seeding 기능은 데이터베이스에 초기 데이터를 쉽게 삽입할 수 있게 해줍니다. 이 프로젝트에서는 seeding을 통해 기본 상품, 사용자, 주문 데이터를 생성합니다.
+
+1. seed 스크립트 생성:
+   prisma/seed.ts 파일을 생성하고 다음과 같이 작성합니다:
+
+   import { PrismaClient } from '@prisma/client'
+   
+   const prisma = new PrismaClient()
+   
+   async function main() {
+     // 상품 데이터 생성
+     await prisma.product.createMany({
+       data: [
+         { name: '상품1', description: '상품1 설명', price: 10000, stock: 100 },
+         { name: '상품2', description: '상품2 설명', price: 20000, stock: 50 },
+         // 추가 상품...
+       ],
+     })
+   
+     // 사용자 데이터 생성
+     const user = await prisma.user.create({
+       data: {
+         email: 'user@example.com',
+         name: '사용자1',
+         password: 'hashedpassword123', // 실제 구현 시 비밀번호 해싱 필요
+       },
+     })
+   
+     // 주문 데이터 생성
+     await prisma.order.create({
+       data: {
+         userId: user.id,
+         totalAmount: 10000,
+         status: 'PENDING',
+         orderItems: {
+           create: [
+             {
+               productId: 1, // 상품1의 ID
+               quantity: 1,
+               price: 10000,
+             },
+           ],
+         },
+       },
+     })
+   }
+   
+   main()
+     .catch((e) => {
+       console.error(e)
+       process.exit(1)
+     })
+     .finally(async () => {
+       await prisma.$disconnect()
+     })
+
+2. package.json에 seed 스크립트 추가:
+   "scripts": {
+     "seed": "ts-node prisma/seed.ts"
+   }
+
+3. seeding 실행:
+   터미널에서 다음 명령어를 실행합니다:
+   npm run seed
+
+   이 명령어는 prisma/seed.ts 파일을 실행하여 데이터베이스에 초기 데이터를 삽입합니다.
+
+4. 자동 seeding 설정 (선택사항):
+   prisma/schema.prisma 파일에 다음 내용을 추가하면, 데이터베이스 마이그레이션 후 자동으로 seeding이 실행됩니다:
+
+   generator client {
+     provider = "prisma-client-js"
+     previewFeatures = ["seedingWithoutDatasource"]
+   }
+
+주의사항:
+- seed 스크립트는 여러 번 실행해도 안전하도록 작성해야 합니다.
+- 실제 프로덕션 환경에서는 중요한 데이터를 seeding하지 않도록 주의하세요.
+- seeding은 개발 및 테스트 목적으로만 사용하세요.
+
+
+프로젝트 시작 방법:
 1. 이 리포지토리를 클론합니다.
-2. 'main' 브랜치에서 본인의 영문 이름으로 새 브랜치를 생성합니다. (예: 'git checkout -b john-doe')
-3. 해당 브랜치에서 과제를 수행합니다.
+2. 'live' 브랜치에서 본인의 영문 이름으로 새 브랜치를 생성합니다. (예: 'git checkout -b jimin')
+3. 해당 브랜치에서 프로젝트를 진행합니다.
 4. 작업이 완료되면 해당 브랜치를 push하고, Pull Request를 생성합니다.
 5. Pull Request 링크를 제출합니다.
 
@@ -210,8 +296,10 @@ API 응답 구조:
 3. Prisma를 이용한 데이터베이스 모델링 및 연동 적절성
 4. 더미 데이터의 적절성 및 시딩 스크립트 구현
 
-참고사항:
-- 상세한 에러 처리나 고급 기능은 필수가 아닙니다. 기본적인 CRUD 작업에 집중하세요.
-- 보안이나 인증 관련 고급 기능은 구현하지 않아도 됩니다. 단순한 JWT 토큰 사용으로 충분합니다.
-- Postman으로 API를 테스트할 수 있도록 각 엔드포인트의 요청/응답 형식을 README에 간단히 기술해주세요.
-- Prisma 사용법에 대해 궁금한 점이 있다면 공식 문서를 참조하거나 질문해주세요.
+권장 사항:
+- 공식 문서를 적극 활용하세요. (Nest.js, Prisma, PostgreSQL)
+- 이해가 가지 않는 부분이 있다면 언제든 팀원들에게 질문하세요.
+- 기능 구현 외에도 코드의 구조와 가독성에 신경 써보세요.
+- 시간이 된다면 단위 테스트도 작성해보세요.
+
+이 프로젝트를 통해 우리 팀의 기술 스택을 빠르게 익히고, 실제 프로젝트에 더 쉽게 참여할 수 있게 될 것입니다. 어려운 점이 있다면 언제든 도움을 요청하세요. 함께 성장하는 좋은 기회가 되기를 바랍니다!
