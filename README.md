@@ -1,41 +1,41 @@
-Nest.js와 PostgreSQL을 이용한 e-commerce API 개발 실습
+# Nest.js와 PostgreSQL을 이용한 e-commerce API 개발 실습
 
-목적:
-이 실습 프로젝트는 우리 팀에서 사용하는 주요 기술 스택인 Nest.js, PostgreSQL, 그리고 Prisma ORM을 실제로 경험해보고 학습하는 것을 목표로 합니다. 간단한 e-commerce API를 구현하면서 이러한 기술들을 어떻게 효과적으로 활용할 수 있는지 직접 체험해볼 수 있습니다.
+## 목적
+이 실습 프로젝트는 우리 팀의 주요 기술 스택인 **Nest.js**, **PostgreSQL**, 그리고 **Prisma ORM**을 실제로 경험하고 학습하는 것을 목표로 합니다. 간단한 e-commerce API를 구현하면서 이러한 기술들을 효과적으로 활용하는 방법을 직접 체험해볼 수 있습니다.
 
-기간: 1주 (7일)
+**기간**: 1주 (7일)
 
-학습 목표:
+## 학습 목표
 1. Nest.js 프레임워크의 기본 구조와 사용법 익히기
 2. PostgreSQL 데이터베이스와 Prisma ORM을 통한 데이터 관리 방법 이해하기
 3. RESTful API 설계 및 구현 능력 향상
 4. 실제 프로젝트와 유사한 환경에서의 개발 경험 쌓기
 
-구현할 API 기능:
+## 구현할 API 기능
 
-1. 상품 관리
-   - POST /products: 새 상품 생성
-   - GET /products: 상품 목록 조회
-   - GET /products/{id}: 특정 상품 조회
-   - PUT /products/{id}: 상품 정보 수정
-   - DELETE /products/{id}: 상품 삭제
+### 1. 상품 관리
+- `POST /products`: 새 상품 생성
+- `GET /products`: 상품 목록 조회
+- `GET /products/{id}`: 특정 상품 조회
+- `PUT /products/{id}`: 상품 정보 수정
+- `DELETE /products/{id}`: 상품 삭제
 
-2. 사용자 관리 및 인증
-   - POST /auth/register: 회원가입
-   - POST /auth/login: 로그인 (JWT 토큰 반환)
-   - GET /users/me: 현재 로그인한 사용자 정보 조회
+### 2. 사용자 관리 및 인증
+- `POST /auth/register`: 회원가입
+- `POST /auth/login`: 로그인 (JWT 토큰 반환)
+- `GET /users/me`: 현재 로그인한 사용자 정보 조회
 
-3. 장바구니 기능
-   - POST /cart: 장바구니에 상품 추가
-   - GET /cart: 장바구니 조회
-   - DELETE /cart/{productId}: 장바구니에서 상품 제거
+### 3. 장바구니 기능
+- `POST /cart`: 장바구니에 상품 추가
+- `GET /cart`: 장바구니 조회
+- `DELETE /cart/{productId}`: 장바구니에서 상품 제거
 
-4. 주문 처리
-   - POST /orders: 주문 생성
-   - GET /orders: 사용자의 주문 목록 조회
-   - GET /orders/{id}: 특정 주문 조회
+### 4. 주문 처리
+- `POST /orders`: 주문 생성
+- `GET /orders`: 사용자의 주문 목록 조회
+- `GET /orders/{id}`: 특정 주문 조회
 
-API 응답 구조:
+## API 응답 구조
 
 1. 상품 관리
    - POST /products
@@ -167,7 +167,7 @@ API 응답 구조:
   "error": "Bad Request"
 }
 
-데이터베이스 관련:
+## 데이터베이스 관련
 1. Prisma를 사용하여 데이터베이스 스키마를 정의해주세요.
 2. 초기 더미 데이터는 필수입니다. Prisma의 seeding 기능을 사용하여 더미 데이터를 생성해주세요.
    - 최소 5개의 상품
@@ -175,7 +175,7 @@ API 응답 구조:
    - 1-2개의 주문 내역
 3. README 파일에 데이터베이스 설정 및 시딩 방법을 명시해주세요.
 
-데이터베이스 설정:
+## 데이터베이스 설정
 1. 다음 SQL 명령을 사용하여 자신의 데이터베이스를 생성하세요:
    CREATE DATABASE task_<your_name>;
    (예: task_john_doe)
