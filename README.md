@@ -178,7 +178,7 @@
 ## 데이터베이스 설정
 1. 다음 SQL 명령을 사용하여 자신의 데이터베이스를 생성하세요:
    CREATE DATABASE task_<your_name>;
-   (예: task_john_doe)
+   (예: task_hana)
 2. 프로젝트 루트에 .env 파일을 생성하고 다음 내용을 추가하세요:
    DB_HOST=void-admin.ct0thd4yrhzu.ap-northeast-2.rds.amazonaws.com
    DB_PORT=5432
