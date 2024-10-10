@@ -4,6 +4,7 @@ import { CreateProductInput } from "./dtos/In/createProduct.dto";
 import { Product } from "@prisma/client";
 import { fetchProductsOutput } from "./dtos/out/fetchProducts.dto";
 import { ProductDto } from "./dtos/product.dto";
+import { UpdateProductInput } from "./dtos/In/updateProduct.dto";
 
 @Injectable()
 export class ProductsService {
@@ -59,4 +60,27 @@ export class ProductsService {
 
         return product;
     }
+
+    // 상품 정보 수정하기
+    async update(input: UpdateProductInput){
+        
+        try{
+            const product = await this.prisma.product.update({
+                where: { 
+                    prod_no: input.prod_no 
+                },
+                data: {
+                    name: input.name,
+                    description:  input.description,
+                    price: input.price,
+                    stock: input.stock
+                }
+            })
+
+            return true
+        }catch(error){
+            throw new BadRequestException('상품 수정 중 오류가 발생했습니다.')
+        }
+    }
+
 }
