@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpStatus, Get, Param, ParseIntPipe, Query, Put } from "@nestjs/common";
+import { Controller, Post, Body, HttpStatus, Get, Param, ParseIntPipe, Query, Put, Delete } from "@nestjs/common";
 import { ProductsService } from "./product.service";
 import { CreateProductInput } from "./dtos/In/createProduct.dto";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
@@ -48,7 +48,7 @@ export class ProductsController {
 
     // 상품 정보변경하기
     @ApiOperation({summary: '상품 정보 변경하기', description: '상품의 정보(상품명, 상품 설명, 가격, 재고 등)를 변경합니다.'})
-    @Put()
+    @Put('modify')
     async updateProduct(@Body() updateProductInput:UpdateProductInput){
         const isUpdated = await this.productService.update(updateProductInput)
         console.log(updateProductInput)
@@ -56,6 +56,19 @@ export class ProductsController {
             return {
                 statusCode: HttpStatus.OK,
                 message: "상품수정을 성공하였습니다."
+            }
+        }
+    }
+
+    // 상품 삭제
+    @ApiOperation({summary: '상품 삭제하기', description: '등록된 상품을 삭제합니다.'})
+    @Delete()
+    async deleteProduct(@Query('prod_no', ParseIntPipe) prod_no){
+        const isDelete = await this.productService.delete(prod_no)
+        if(isDelete){
+            return {
+                statusCode: HttpStatus.OK,
+                message: "상품삭제를 성공하였습니다."
             }
         }
     }

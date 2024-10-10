@@ -83,4 +83,17 @@ export class ProductsService {
         }
     }
 
+    // 상품 삭제하기
+    async delete(prod_no: number){
+        try{
+            const product = await this.prisma.product.delete({
+                where: {
+                    prod_no: prod_no
+                }
+            })
+            return true
+        }catch(error){
+            throw new BadRequestException('상품 삭제 중 오류가 발생했습니다.')
+        }
+    }
 }
