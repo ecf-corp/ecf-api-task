@@ -1,14 +1,26 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  
+  //aws
+  //url      = "postgresql://root:ecfstore2024@void-admin.ct0thd4yrhzu.ap-northeast-2.rds.amazonaws.com/task_dahye"
+  
+  //local
+  url = "postgresql://admin:1234@localhost:5432/task_dahye"
+}
+
+model Product{
+
+  idx String @id @default(uuid()) @db.Uuid
+  prod_no Int @unique @default(autoincrement()) @db.Integer
+  createAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updateAt DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+  name String @map("name") @db.VarChar
+  price Int @map("price") @db.Integer
+  description String @map("description") @db.VarChar()
+  stock Int @map("stock") @db.Integer
 }
