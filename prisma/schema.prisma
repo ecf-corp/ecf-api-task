@@ -12,6 +12,11 @@ datasource db {
   url = "postgresql://admin:1234@localhost:5432/task_dahye"
 }
 
+enum Gender {
+  MALE
+  FEMALE
+}
+
 model Product{
 
   idx String @id @default(uuid()) @db.Uuid
@@ -23,4 +28,19 @@ model Product{
   price Int @map("price") @db.Integer
   description String @map("description") @db.VarChar()
   stock Int @map("stock") @db.Integer
+}
+
+model Customers{
+
+  idx String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  cust_no Int @default(autoincrement()) @db.Integer
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+  nickname String? 
+  email String @unique
+  password String   //비밀번호, bcrypt 해쉬
+  name String
+  phone String @unique
+  gender Gender? 
 }
