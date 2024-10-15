@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shopping Mall - Order Management</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 1400px; /* 최대 너비를 1400px로 증가 */
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+      h1,
+      h2 {
+        color: #2c3e50;
+        text-align: center;
+      }
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: space-between;
+      }
+      .order-form,
+      .order-fetch,
+      .order-update,
+      .order-delete {
+        flex-basis: calc(50% - 10px); /* 2열 레이아웃 */
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .order-list {
+        flex-basis: 100%;
+        margin-top: 20px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      label {
+        font-weight: bold;
+        display: block;
+        margin-top: 10px;
+      }
+      .form-control {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 1em;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+      button:hover {
+        background-color: #2980b9;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+      th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+      tr:hover {
+        background-color: #f5f5f5;
+      }
+      .status {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8em;
+        font-weight: bold;
+      }
+      .status-PENDING {
+        background-color: #f39c12;
+        color: white;
+      }
+      .status-PROCESSING {
+        background-color: #3498db;
+        color: white;
+      }
+      .status-SHIPPED {
+        background-color: #2ecc71;
+        color: white;
+      }
+      .status-DELIVERED {
+        background-color: #95a5a6;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Order Management</h1>
+
+    <div class="container">
+      <!-- 주문 생성 섹션 -->
+      <div class="order-form">
+        <h2>Create New Order</h2>
+        <label for="items">Items (JSON format)</label>
+        <textarea
+          id="items"
+          class="form-control"
+          rows="5"
+          placeholder='[{"productId": 1, "quantity": 2, "price": 1000}]'
+          required
+        ></textarea>
+
+        <button onclick="createOrder()">Create Order</button>
+      </div>
+
+      <!-- 특정 주문 조회 섹션 -->
+      <div class="order-fetch">
+        <h2>Fetch Specific Order</h2>
+        <label for="orderId">Order ID</label>
+        <input
+          type="number"
+          id="orderId"
+          class="form-control"
+          placeholder="Enter order ID"
+          required
+        />
+
+        <button onclick="fetchOrderById()">Fetch Order</button>
+        <div id="specificOrder"></div>
+      </div>
+
+      <!-- 주문 수정 섹션 -->
+      <div class="order-update">
+        <h2>Update Order</h2>
+        <label for="updateOrderId">Order ID</label>
+        <input
+          type="number"
+          id="updateOrderId"
+          class="form-control"
+          placeholder="Enter order ID"
+          required
+        />
+
+        <label for="updateStatus">New Status</label>
+        <select id="updateStatus" class="form-control">
+          <option value="PENDING">PENDING</option>
+          <option value="PROCESSING">PROCESSING</option>
+          <option value="SHIPPED">SHIPPED</option>
+          <option value="DELIVERED">DELIVERED</option>
+        </select>
+
+        <label for="updateItems">Items (JSON format, optional)</label>
+        <textarea
+          id="updateItems"
+          class="form-control"
+          rows="5"
+          placeholder='[{"productId": 1, "quantity": 2, "price": 1000}]'
+        ></textarea>
+
+        <button onclick="updateOrder()">Update Order</button>
+      </div>
+
+      <!-- 주문 삭제 섹션 -->
+      <div class="order-delete">
+        <h2>Delete Order</h2>
+        <label for="deleteOrderId">Order ID</label>
+        <input
+          type="number"
+          id="deleteOrderId"
+          class="form-control"
+          placeholder="Enter order ID"
+          required
+        />
+
+        <button onclick="deleteOrder()">Delete Order</button>
+      </div>
+    </div>
+
+    <!-- 주문 목록 테이블 -->
+    <div class="order-list">
+      <h2>Order List</h2>
+      <table id="orderTable">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Created At</th>
+            <th>Items</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Order data will be inserted here -->
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      const API_URL = 'http://localhost:3000/orders';
+
+      async function fetchOrders() {
+        try {
+          const response = await fetch(API_URL);
+          if (!response.ok) throw new Error('Failed to fetch orders');
+          return await response.json();
+        } catch (error) {
+          console.error('Error:', error);
+          return [];
+        }
+      }
+
+      async function createOrder() {
+        const itemsJson = document.getElementById('items').value;
+
+        try {
+          const parsedData = JSON.parse(itemsJson);
+          let items, totalAmount;
+
+          if (Array.isArray(parsedData)) {
+            items = parsedData;
+            totalAmount = items.reduce((sum, item) => {
+              if (
+                typeof item.quantity !== 'number' ||
+                typeof item.price !== 'number'
+              ) {
+                throw new Error(
+                  'Invalid item format: quantity and price must be numbers',
+                );
+              }
+              return sum + item.quantity * item.price;
+            }, 0);
+          } else if (typeof parsedData === 'object' && parsedData !== null) {
+            // 단일 아이템인 경우
+            items = [parsedData];
+            if (
+              typeof parsedData.quantity !== 'number' ||
+              typeof parsedData.price !== 'number'
+            ) {
+              throw new Error(
+                'Invalid item format: quantity and price must be numbers',
+              );
+            }
+            totalAmount = parsedData.quantity * parsedData.price;
+          } else {
+            throw new Error(
+              'Invalid input: expected an array of items or a single item object',
+            );
+          }
+
+          const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              items,
+              totalAmount,
+            }),
+          });
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to create order');
+          }
+          alert('Order created successfully!');
+          populateTable();
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error creating order: ' + error.message);
+        }
+      }
+
+      async function fetchOrderById() {
+        const orderId = document.getElementById('orderId').value;
+
+        try {
+          const response = await fetch(`${API_URL}/${orderId}`);
+          if (!response.ok) throw new Error('Failed to fetch order');
+
+          const order = await response.json();
+          const specificOrderDiv = document.getElementById('specificOrder');
+
+          specificOrderDiv.innerHTML = `
+            <h3>Order ID: ${order.id}</h3>
+            <p>Total Amount: ${formatCurrency(order.totalAmount)}</p>
+            <p>Status: <span class="status ${getStatusClass(order.status)}">${order.status}</span></p>
+            <p>Created At: ${formatDate(order.createdAt)}</p>
+            <p>Items:</p>
+            <ul>
+              ${order.orderItems.map((item) => `<li>Product ID: ${item.productId} - Quantity: ${item.quantity} x Price: ${formatCurrency(item.price)}</li>`).join('')}
+            </ul>
+          `;
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error fetching order: ' + error.message);
+        }
+      }
+
+      async function updateOrder() {
+        const orderId = document.getElementById('updateOrderId').value;
+        const statusInput = document.getElementById('updateStatus').value;
+        const itemsJson = document.getElementById('updateItems').value;
+
+        try {
+          let updateData = {};
+
+          // Parse the input as JSON
+          const parsedInput = JSON.parse(itemsJson || '{}');
+
+          // Check if the input is an array with a single object containing status
+          if (
+            Array.isArray(parsedInput) &&
+            parsedInput.length === 1 &&
+            parsedInput[0].status
+          ) {
+            updateData.status = parsedInput[0].status;
+          } else {
+            // If not, use the previous logic
+            updateData.status = statusInput;
+            if (itemsJson) {
+              updateData.items = parsedInput;
+            }
+          }
+
+          const response = await fetch(`${API_URL}/${orderId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updateData),
+          });
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to update order');
+          }
+          alert('Order updated successfully!');
+          populateTable();
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error updating order: ' + error.message);
+        }
+      }
+
+      async function deleteOrder() {
+        const orderId = document.getElementById('deleteOrderId').value;
+
+        try {
+          const response = await fetch(`${API_URL}/${orderId}`, {
+            method: 'DELETE',
+          });
+          if (!response.ok) throw new Error('Failed to delete order');
+          alert('Order deleted successfully!');
+          populateTable();
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error deleting order: ' + error.message);
+        }
+      }
+
+      function getStatusClass(status) {
+        return `status-${status}`;
+      }
+
+      function formatDate(dateString) {
+        return new Date(dateString).toLocaleString();
+      }
+
+      function formatCurrency(amount) {
+        return new Intl.NumberFormat('ko-KR', {
+          style: 'currency',
+          currency: 'KRW',
+        }).format(amount);
+      }
+
+      async function populateTable() {
+        const orders = await fetchOrders();
+        const tableBody = document.querySelector('#orderTable tbody');
+        tableBody.innerHTML = '';
+
+        if (orders.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="5">No orders found</td></tr>';
+          return;
+        }
+
+        orders.forEach((order) => {
+          const itemsList = order.orderItems
+            .map(
+              (item) =>
+                `${item.productId} (${item.quantity} x ${formatCurrency(item.price)})`,
+            )
+            .join('<br>');
+
+          const row = `
+            <tr>
+              <td>${order.id}</td>
+              <td>${formatCurrency(order.totalAmount)}</td>
+              <td><span class="status ${getStatusClass(order.status)}">${order.status}</span></td>
+              <td>${formatDate(order.createdAt)}</td>
+              <td>${itemsList}</td>
+            </tr>
+          `;
+          tableBody.insertAdjacentHTML('beforeend', row);
+        });
+      }
+
+      populateTable();
+    </script>
+  </body>
+</html>

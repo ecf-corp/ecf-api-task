@@ -10,3 +10,5 @@ export class AppController {
     return this.appService.getHello();
   }
 }
+
+// Controller: URL을 처리하고 함수를 실행하는 역할을 하는 클래스
