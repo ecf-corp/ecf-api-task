@@ -1,9 +1,7 @@
 // orders.service.ts
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Order, PrismaClient } from '@prisma/client';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { OrderDto } from './dto/order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrderDto, CreateOrderDto, UpdateOrderDto } from './dto/order.dto';
 import { PrismaService } from 'prisma/prisma.service';
 
 const prisma = new PrismaClient();

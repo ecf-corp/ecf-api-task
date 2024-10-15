@@ -1,9 +1,7 @@
 import { Controller, Get, Post, Body, Param, UseGuards, Request, UnauthorizedException, SetMetadata, Patch, Delete } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { JwtStrategy } from '../auth/jwt.strategy';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { OrderDto } from './dto/order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrderDto, CreateOrderDto, UpdateOrderDto } from './dto/order.dto';
 import { Order } from '@prisma/client';
 const Public = () => SetMetadata('isPublic', true);
 
