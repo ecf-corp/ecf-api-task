@@ -1,4 +1,4 @@
-# Nest.js와 PostgreSQL을 이용한 e-commerce API 개발 실습
+# e-commerce API 개발 실습
 
 ## 목적
 이 실습 프로젝트는 우리 팀의 주요 기술 스택인 **Nest.js**, **PostgreSQL**, 그리고 **Prisma ORM**을 실제로 경험하고 학습하는 것을 목표로 합니다. 간단한 e-commerce API를 구현하면서 이러한 기술들을 효과적으로 활용하는 방법을 직접 체험해볼 수 있습니다.
