@@ -1,303 +1,222 @@
-# Nest.js와 PostgreSQL을 이용한 e-commerce API 개발 실습
+# 백엔드 개발자 채용 과제: 실시간 검색어 순위 시스템 구현
 
-## 목적
-이 실습 프로젝트는 우리 팀의 주요 기술 스택인 **Nest.js**, **PostgreSQL**, 그리고 **Prisma ORM**을 실제로 경험하고 학습하는 것을 목표로 합니다. 간단한 e-commerce API를 구현하면서 이러한 기술들을 효과적으로 활용하는 방법을 직접 체험해볼 수 있습니다.
+## 과제 설명
+쇼핑몰의 검색 기능에서 사용될 실시간 검색어 순위 시스템을 구현하는 과제입니다.
 
-## 학습 목표
-1. Nest.js 프레임워크의 기본 구조와 사용법 익히기
-2. PostgreSQL 데이터베이스와 Prisma ORM을 통한 데이터 관리 방법 이해하기
-3. RESTful API 설계 및 구현 능력 향상
-4. 실제 프로젝트와 유사한 환경에서의 개발 경험 쌓기
+## 필수 요구사항
 
-## 구현할 API 기능
+1. **기술 스택**
+   - NestJS
+   - PostgreSQL
+   - Redis
+   - TypeScript
+   - Prisma (ORM)
 
-### 1. 상품 관리
-- `POST /products`: 새 상품 생성
-- `GET /products`: 상품 목록 조회
-- `GET /products/{id}`: 특정 상품 조회
-- `PUT /products/{id}`: 상품 정보 수정
-- `DELETE /products/{id}`: 상품 삭제
-
-### 2. 사용자 관리 및 인증
-- `POST /auth/register`: 회원가입
-- `POST /auth/login`: 로그인 (JWT 토큰 반환)
-- `GET /users/me`: 현재 로그인한 사용자 정보 조회
-
-### 3. 장바구니 기능
-- `POST /cart`: 장바구니에 상품 추가
-- `GET /cart`: 장바구니 조회
-- `DELETE /cart/{productId}`: 장바구니에서 상품 제거
-
-### 4. 주문 처리
-- `POST /orders`: 주문 생성
-- `GET /orders`: 사용자의 주문 목록 조회
-- `GET /orders/{id}`: 특정 주문 조회
-
-## API 응답 구조
-
-1. 상품 관리
-   - POST /products
-     {
-       "id": 1,
-       "name": "상품명",
-       "description": "상품 설명",
-       "price": 10000,
-       "stock": 100
-     }
-   - GET /products
-     {
-       "items": [
-         {
-           "id": 1,
-           "name": "상품명",
-           "price": 10000
-         }
-       ],
-       "total": 10,
-       "page": 1,
-       "limit": 20
-     }
-   - GET /products/{id}
-     {
-       "id": 1,
-       "name": "상품명",
-       "description": "상품 설명",
-       "price": 10000,
-       "stock": 100
-     }
-   - PUT /products/{id}: GET /products/{id}와 동일한 응답
-   - DELETE /products/{id}
-     {
-       "message": "상품이 삭제되었습니다."
-     }
-
-2. 사용자 관리 및 인증
-   - POST /auth/register
-     {
-       "id": 1,
-       "email": "user@example.com",
-       "name": "사용자명"
-     }
-   - POST /auth/login
-     {
-       "accessToken": "JWT_TOKEN_HERE"
-     }
-   - GET /users/me
-     {
-       "id": 1,
-       "email": "user@example.com",
-       "name": "사용자명"
-     }
-
-3. 장바구니 기능
-   - POST /cart
-     {
-       "id": 1,
-       "productId": 1,
-       "quantity": 2
-     }
-   - GET /cart
-     {
-       "items": [
-         {
-           "id": 1,
-           "productId": 1,
-           "name": "상품명",
-           "price": 10000,
-           "quantity": 2
-         }
-       ],
-       "total": 20000
-     }
-   - DELETE /cart/{productId}
-     {
-       "message": "장바구니에서 상품이 제거되었습니다."
-     }
-
-4. 주문 처리
-   - POST /orders
-     {
-       "id": 1,
-       "totalAmount": 20000,
-       "status": "PENDING",
-       "items": [
-         {
-           "productId": 1,
-           "quantity": 2,
-           "price": 10000
-         }
-       ]
-     }
-   - GET /orders
-     {
-       "items": [
-         {
-           "id": 1,
-           "totalAmount": 20000,
-           "status": "PENDING",
-           "createdAt": "2023-04-20T12:00:00Z"
-         }
-       ],
-       "total": 5,
-       "page": 1,
-       "limit": 20
-     }
-   - GET /orders/{id}
-     {
-       "id": 1,
-       "totalAmount": 20000,
-       "status": "PENDING",
-       "items": [
-         {
-           "productId": 1,
-           "name": "상품명",
-           "quantity": 2,
-           "price": 10000
-         }
-       ],
-       "createdAt": "2023-04-20T12:00:00Z"
-     }
-
-오류 응답 구조:
-{
-  "statusCode": 400,
-  "message": "에러 메시지",
-  "error": "Bad Request"
-}
-
-## 데이터베이스 관련
-1. Prisma를 사용하여 데이터베이스 스키마를 정의해주세요.
-2. 초기 더미 데이터는 필수입니다. Prisma의 seeding 기능을 사용하여 더미 데이터를 생성해주세요.
-   - 최소 5개의 상품
-   - 2-3명의 사용자 (일반 사용자, 관리자)
-   - 1-2개의 주문 내역
-3. README 파일에 데이터베이스 설정 및 시딩 방법을 명시해주세요.
-
-## 데이터베이스 설정
-1. 다음 SQL 명령을 사용하여 자신의 데이터베이스를 생성하세요:
-   CREATE DATABASE task_<your_name>;
-   (예: task_hana)
-2. 프로젝트 루트에 .env 파일을 생성하고 다음 내용을 추가하세요:
-   DB_HOST=void-admin.ct0thd4yrhzu.ap-northeast-2.rds.amazonaws.com
-   DB_PORT=5432
-   DB_USERNAME=admin
-   DB_PASSWORD=ecfstore2024
-   DB_NAME=task_<your_name>
-3. <your_name> 부분을 자신의 이름으로 바꾸는 것을 잊지 마세요.
-4. .env 파일은 .gitignore에 포함되어 있으므로 GitHub에 업로드되지 않습니다. 
-   이는 각자의 DB_NAME이 다르기 때문입니다.
-5. 데이터베이스 연결에 문제가 있다면 관리자에게 문의하세요.
-
-참고: 이 정보는 회사 내부용이므로 외부에 공유하지 마세요.
-
-Prisma 시딩:
-초기 데이터 설정을 위해 Prisma의 seeding 기능을 사용합니다. 이를 통해 데이터베이스 작업의 기본을 익힐 수 있습니다.
-
-Prisma Seeding 사용하기:
-Prisma의 seeding 기능은 데이터베이스에 초기 데이터를 쉽게 삽입할 수 있게 해줍니다. 이 프로젝트에서는 seeding을 통해 기본 상품, 사용자, 주문 데이터를 생성합니다.
-
-1. seed 스크립트 생성:
-   prisma/seed.ts 파일을 생성하고 다음과 같이 작성합니다:
-
-   import { PrismaClient } from '@prisma/client'
+2. **필수 구현 API**
+   - 검색어 로깅 API
+     * 검색 요청 시 검색어를 저장
+     * 검색 시간, 검색어 저장
+     * 선택적으로 비회원/회원 구분 저장
    
-   const prisma = new PrismaClient()
+   - 실시간 인기 검색어 조회 API
+     * 최근 1시간 내 가장 많이 검색된 키워드 10개
+     * 각 검색어의 검색 횟수 포함
+     * 이전 시간대 대비 순위 변동 표시
    
-   async function main() {
-     // 상품 데이터 생성
-     await prisma.product.createMany({
-       data: [
-         { name: '상품1', description: '상품1 설명', price: 10000, stock: 100 },
-         { name: '상품2', description: '상품2 설명', price: 20000, stock: 50 },
-         // 추가 상품...
-       ],
-     })
-   
-     // 사용자 데이터 생성
-     const user = await prisma.user.create({
-       data: {
-         email: 'user@example.com',
-         name: '사용자1',
-         password: 'hashedpassword123', // 실제 구현 시 비밀번호 해싱 필요
-       },
-     })
-   
-     // 주문 데이터 생성
-     await prisma.order.create({
-       data: {
-         userId: user.id,
-         totalAmount: 10000,
-         status: 'PENDING',
-         orderItems: {
-           create: [
-             {
-               productId: 1, // 상품1의 ID
-               quantity: 1,
-               price: 10000,
-             },
-           ],
-         },
-       },
-     })
-   }
-   
-   main()
-     .catch((e) => {
-       console.error(e)
-       process.exit(1)
-     })
-     .finally(async () => {
-       await prisma.$disconnect()
-     })
+   - 기간별 인기 검색어 조회 API
+     * 시작일, 종료일 기준 검색어 순위
+     * 페이지네이션 구현
 
-2. package.json에 seed 스크립트 추가:
-   "scripts": {
-     "seed": "ts-node prisma/seed.ts"
-   }
+3. **성능 요구사항**
+   - 검색어 저장은 초당 100회 이상 처리 가능해야 함
+   - 실시간 인기 검색어 조회는 500ms 이내 응답
+   - 캐시 적용 필수
 
-3. seeding 실행:
-   터미널에서 다음 명령어를 실행합니다:
-   npm run seed
+## 선택 요구사항 (가산점)
 
-   이 명령어는 prisma/seed.ts 파일을 실행하여 데이터베이스에 초기 데이터를 삽입합니다.
+1. **데이터 필터링**
+   - 욕설, 비속어 필터링 기능
+   - 연속된 동일 검색어 필터링 (도배 방지)
 
-4. 자동 seeding 설정 (선택사항):
-   prisma/schema.prisma 파일에 다음 내용을 추가하면, 데이터베이스 마이그레이션 후 자동으로 seeding이 실행됩니다:
+2. **추가 기능**
+   - 검색어 자동완성 API
+   - 성별/연령대별 인기 검색어
+   - 검색어 연관 검색어 추천
 
-   generator client {
-     provider = "prisma-client-js"
-     previewFeatures = ["seedingWithoutDatasource"]
-   }
+3. **성능 최적화**
+   - 대용량 데이터 처리 방안 제시
+   - 캐시 전략 구체화
+   - 배치 처리 구현
 
-주의사항:
-- seed 스크립트는 여러 번 실행해도 안전하도록 작성해야 합니다.
-- 실제 프로덕션 환경에서는 중요한 데이터를 seeding하지 않도록 주의하세요.
-- seeding은 개발 및 테스트 목적으로만 사용하세요.
-
-
-## 프로젝트 시작 방법
-1. 이 리포지토리를 클론합니다.
-2. 'live' 브랜치에서 본인의 영문 이름으로 새 브랜치를 생성합니다. (예: `git checkout -b jimin`)
-3. 해당 브랜치에서 프로젝트를 진행합니다.
-4. 작업이 완료되면 해당 브랜치를 push하고, Pull Request를 생성합니다.
-5. Pull Request 링크를 제출합니다.
+4. **모니터링**
+   - API 응답 시간 측정
+   - 에러 로깅
+   - 헬스 체크 API
 
 ## 제출 요구사항
-1. 소스 코드
-2. README 파일 (프로젝트 설정, 실행 방법, 데이터베이스 설정 및 시딩 방법 포함)
-3. Prisma 스키마 파일
-4. 더미 데이터 생성을 위한 시딩 스크립트
+
+1. **기술 문서**
+   - API 명세서
+   - 시스템 아키텍처 설명
+   - 설치 및 실행 방법
+   - 구현 방식 설명
+   - 성능 개선 방안
+
+2. **소스 코드**
+   - GitHub 저장소 제출
+   - 실행 가능한 상태로 제출
+   - Docker Compose 설정 포함
+
+3. **테스트**
+   - 단위 테스트 구현
+   - API 테스트 케이스 포함
 
 ## 평가 기준
-1. API 기능 구현 완성도
-2. 코드 구조 및 가독성
-3. Prisma를 이용한 데이터베이스 모델링 및 연동 적절성
-4. 더미 데이터의 적절성 및 시딩 스크립트 구현
 
-## 권장 사항
-- 공식 문서를 적극 활용하세요. (Nest.js, Prisma, PostgreSQL)
-- 이해가 가지 않는 부분이 있다면 언제든 팀원들에게 질문하세요.
-- 기능 구현 외에도 코드의 구조와 가독성에 신경 써보세요.
-- 시간이 된다면 단위 테스트도 작성해보세요.
+1. **코드 품질 (40%)**
+   - 코드 구조화 및 설계
+   - TypeScript 활용도
+   - 에러 처리
+   - 코드 컨벤션
 
-이 프로젝트를 통해 우리 팀의 기술 스택을 빠르게 익히고, 실제 프로젝트에 더 쉽게 참여할 수 있게 될 것입니다. 어려운 점이 있다면 언제든 도움을 요청하세요. 함께 성장하는 좋은 기회가 되기를 바랍니다!
+2. **기능 구현 (30%)**
+   - 필수 요구사항 충족도
+   - API 동작 정확성
+   - 성능 요구사항 충족도
+
+3. **확장성 (20%)**
+   - 선택 요구사항 구현
+   - 추가 기능 구현
+   - 성능 최적화 방안
+
+4. **문서화 (10%)**
+   - API 문서 완성도
+   - 코드 주석
+   - 설치 가이드 명확성
+
+## 참고 사항
+- 과제 수행 기간: 7일
+- Docker Compose로 로컬 환경 구성
+- .env.example 파일 포함
+- README.md 파일에 실행 방법 상세 기술
+
+## 프로젝트 제출 방법
+
+1. **GitHub 저장소 제출**
+   - Private GitHub 저장소 생성
+   - 저장소 접근 권한 부여: [회사 GitHub 계정명]
+   - main 브랜치에 최종 코드 푸시
+   - README.md 파일에 아래 내용 포함 필수:
+     * 프로젝트 설명
+     * 실행 방법
+     * API 문서
+     * 구현 설명
+     * 개선 사항
+
+2. **압축 파일 제출**
+   - 프로젝트 빌드 후 압축
+   - 이메일 제출: [회사 이메일 주소]
+   - 제출 양식:
+     * 이메일 제목: [백엔드 개발자 채용] 홍길동 - 과제 제출
+     * 첨부 파일명: backend_홍길동.zip
+     * GitHub 저장소 주소 포함
+3. **프로젝트 구조**
+   backend_홍길동/
+   ├── src/
+   ├── test/
+   ├── prisma/
+   ├── dist/            # 빌드 결과물
+   ├── docker-compose.yml
+   ├── .env.example     # 환경변수 예시
+   ├── README.md        # 문서화
+   └── package.json
+
+## 로컬 개발 환경 설정
+
+1. **필수 설치 항목**
+   - Node.js 20 이상
+   - Docker Desktop
+   - Redis
+   - PostgreSQL
+
+2. **환경변수 설정**
+   다음 항목들을 `.env` 파일에 설정:
+
+*Database
+DATABASE_URL="postgresql://user:password@localhost:5432/search_db"
+*Redis
+REDIS_HOST="localhost"
+REDIS_PORT=6379
+*App
+PORT=3000
+NODE_ENV=development
+
+3. **실행 방법**
+```bash
+# 의존성 설치
+npm install
+
+# 도커 컨테이너 실행
+docker-compose up -d
+
+# 데이터베이스 마이그레이션
+npx prisma migrate dev
+
+# 개발 서버 실행
+npm run start:dev
+
+# 프로덕션 빌드
+npm run build
+```
+API 테스트 방법
+
+Postman 컬렉션
+
+[회사 Postman 워크스페이스 링크]에 테스트용 컬렉션 제공
+로컬 환경에서 API 테스트 가능
+
+
+API 엔드포인트
+
+Base URL: http://localhost:3000
+Swagger 문서: http://localhost:3000/api
+
+
+
+평가 후 피드백
+
+과제 평가 후 1주일 이내 이메일로 피드백 제공
+필요시 코드 리뷰 미팅 진행
+
+참고사항
+
+데이터베이스 스키마
+
+Prisma 스키마 직접 설계
+인덱스 설정 고려
+
+
+API 구현 시 고려사항
+
+RESTful API 설계 원칙 준수
+적절한 HTTP 상태 코드 사용
+에러 응답 포맷 통일
+
+
+문서화
+
+Swagger 사용 권장
+API 별 요청/응답 예시 포함
+에러 케이스 문서화
+
+
+테스트 코드
+
+Jest 프레임워크 사용
+단위 테스트 권장
+E2E 테스트 권장
+
+
+Q&A
+과제 관련 문의사항은 kingoxpo@ecfkorea.com으로 문의해주세요.
+응답은 평일 기준 24시간 이내 제공됩니다.
