@@ -17,9 +17,8 @@
 
 ### 기술 스택
   - NestJS
-  - Prisma
   - PostgreSQL 또는 MongoDB
-  - TypeScript
+  - Prisma (선택 사항)
   - Redis (선택 사항)
 
 ### 평가 기준
@@ -46,22 +45,31 @@
 - 데이터 검증
 
 ## 제출 방법
-1. 본 과제 템플릿을 본인의 GitHub 저장소로 옮겨 진행해 주세요:
 
-# 1. 과제 템플릿 클론
-git clone [과제템플릿주소]
+1. NestJS CLI 설치 (설치되어 있지 않은 경우)
+```bash
+npm i -g @nestjs/cli
+```
 
-# 2. 본인의 새로운 저장소로 옮기기
-cd [프로젝트폴더]
-git remote remove origin
-git remote add origin [본인의_새로운_저장소_주소]
-git push -u origin main
-## 필수 제출 사항
+2. 새 프로젝트 생성
+```bash
+# NestJS 프로젝트 생성
+nest new search-trending-api(프로젝트명 자유롭게 입력)
+# 패키지 매니저 선택 화면에서 npm 선택
+```
 
-2. 다음 사항을 이메일(kingoxpo@ecfkorea.com)로 전달해 주세요:
-   - GitHub 저장소 URL
-   - 이름
-   - 연락처
+3. 그 외 필요한 패키지 설치
+
+4. 프로젝트를 본인의 GitHub 저장소에 업로드하여 진행해 주세요.
+
+## 제출 방법
+
+작업이 완료되면 다음 사항을 이메일(kingoxpo@ecfkorea.com)로 전달해 주세요:
+- 제목: [이름] 백엔드 개발자 과제 제출
+- GitHub 저장소 URL
+- 이름
+- 연락처
+
 
 ## 필수 제출 사항
 
