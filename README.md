@@ -106,7 +106,7 @@ nest new search-trending-api(프로젝트명 자유롭게 입력)
 # 패키지 매니저 선택 화면에서 npm 선택
 ```
 
-### Prisma 설정
+### Prisma 설정 (선택)
 ```bash
 # Prisma 설치
 npm install @prisma/client prisma --save-dev
@@ -128,7 +128,7 @@ model SearchKeyword {
 }
 ```
 
-### Redis 설정
+### Redis 설정 (선택)
 ```bash
 # Redis 클라이언트 설치
 npm install ioredis
