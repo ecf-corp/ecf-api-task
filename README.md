@@ -16,15 +16,29 @@
    - 검색어별 검색 횟수 포함
   
 ## API 명세 예시
+아래는 참고용 예시이며, 자유롭게 변경하실 수 있습니다.
 
 ### 1. 검색어 저장 API
 ```
 POST /api/search/keywords
 
+# 비회원 요청 예시
 Request:
 {
   "keyword": "맨투맨",
-  "userId": "user123"  // 임의의 식별자
+  "ip": "123.456.789.012"  // 동일 IP의 과도한 검색 방지, 지역별 트렌드 분석 가능
+}
+
+# 회원 요청 예시
+Request:
+{
+  "keyword": "맨투맨",
+  "userId": "user123",
+  "userInfo": {
+    "age": 28,
+    "gender": "female",
+    "region": "서울"
+  }
 }
 
 Response: (200 OK)
@@ -33,8 +47,8 @@ Response: (200 OK)
   "data": {
     "id": 1,
     "keyword": "맨투맨",
-    "userId": "user123",
-    "createdAt": "2024-10-28T09:00:00.000Z"
+    "createdAt": "2024-10-28T09:00:00.000Z",
+    // ... 저장된 데이터
   }
 }
 ```
@@ -43,6 +57,12 @@ Response: (200 OK)
 ```
 GET /api/search/trending
 
+# 기본 조회
+GET /api/search/trending
+
+# 필터링 조회 예시 (선택적 구현)
+GET /api/search/trending?age=20-30&gender=female&region=서울
+
 Response: (200 OK)
 {
   "success": true,
@@ -50,17 +70,21 @@ Response: (200 OK)
     {
       "keyword": "맨투맨",
       "count": 150,
-      "rank": 1
+      "rank": 1,
+      "variation": 2  // 옵션: 순위 변동
     },
     {
       "keyword": "청바지",
       "count": 120,
-      "rank": 2
+      "rank": 2,
+      "variation": -1
     }
     // ... 상위 10개
   ]
 }
 ```
+응답 구조나 필드는 구현하는 방향에 따라 자유롭게 변경하실 수 있습니다.
+추가적인 기능이나 필드를 구현하셔도 좋습니다.
 
 ### 기술 스택
   - NestJS
@@ -213,7 +237,7 @@ PORT=3000
 
 ## 과제 진행 시 유의사항
 
-- 과제 수행 기간: 제안받은 시점으로부터 5일
+- 과제 수행 기간: 2차면접일 전일까지(주말 및 공휴일 무관)
 - 앱 실행에 필요한 모든 절차는 README.md에 명시
 - 기본적인 기능 구현에 집중해 주세요
 - 모든 기능을 완벽하게 구현하지 못하더라도 구현한 내용을 바탕으로 평가합니다
