@@ -14,6 +14,53 @@
    - 24시간 동안의 인기 검색어 순위 제공
    - 상위 10개 검색어 반환
    - 검색어별 검색 횟수 포함
+  
+## API 명세 예시
+
+### 1. 검색어 저장 API
+```
+POST /api/search/keywords
+
+Request:
+{
+  "keyword": "맨투맨",
+  "userId": "user123"  // 임의의 식별자
+}
+
+Response: (200 OK)
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "keyword": "맨투맨",
+    "userId": "user123",
+    "createdAt": "2024-10-28T09:00:00.000Z"
+  }
+}
+```
+
+### 2. 인기 검색어 조회 API
+```
+GET /api/search/trending
+
+Response: (200 OK)
+{
+  "success": true,
+  "data": [
+    {
+      "keyword": "맨투맨",
+      "count": 150,
+      "rank": 1
+    },
+    {
+      "keyword": "청바지",
+      "count": 120,
+      "rank": 2
+    }
+    // ... 상위 10개
+  ]
+}
+```
 
 ### 기술 스택
   - NestJS
@@ -44,23 +91,104 @@
 - 성능 최적화
 - 데이터 검증
 
-## 제출 방법
 
-1. NestJS CLI 설치 (설치되어 있지 않은 경우)
+## 패키지 설치 및 설정 예시
+
+### NestJS CLI 설치 (설치되어 있지 않은 경우)
 ```bash
 npm i -g @nestjs/cli
 ```
 
-2. 새 프로젝트 생성
+### 새 프로젝트 생성
 ```bash
 # NestJS 프로젝트 생성
 nest new search-trending-api(프로젝트명 자유롭게 입력)
 # 패키지 매니저 선택 화면에서 npm 선택
 ```
 
-3. 그 외 필요한 패키지 설치
+### Prisma 설정
+```bash
+# Prisma 설치
+npm install @prisma/client prisma --save-dev
 
-4. 프로젝트를 본인의 GitHub 저장소에 업로드하여 진행해 주세요.
+# Prisma 초기화
+npx prisma init
+```
+
+schema.prisma 예시:
+```prisma
+model SearchKeyword {
+  id        Int      @id @default(autoincrement())
+  keyword   String
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([keyword])
+}
+```
+
+### Redis 설정
+```bash
+# Redis 클라이언트 설치
+npm install ioredis
+
+# Redis 모듈 설치 (NestJS용)
+npm install @nestjs/cache-manager cache-manager
+```
+
+Redis 연결 예시:
+```typescript
+// redis.config.ts
+import { Redis } from 'ioredis';
+
+export const redis = new Redis({
+  host: 'localhost',
+  port: 6379,
+});
+
+// app.module.ts
+import { CacheModule } from '@nestjs/cache-manager';
+import { Module } from '@nestjs/common';
+import * as redisStore from 'cache-manager-ioredis';
+
+@Module({
+  imports: [
+    CacheModule.register({
+      store: redisStore,
+      host: 'localhost',
+      port: 6379,
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+Redis 사용 예시:
+```typescript
+// 인기 검색어 저장
+await redis.zincrby('trending:keywords', 1, keyword);
+
+// 인기 검색어 조회
+const trending = await redis.zrevrange('trending:keywords', 0, 9, 'WITHSCORES');
+```
+
+## 환경변수 설정 (.env.example)
+```plaintext
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/search_db?schema=public"
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# Application
+PORT=3000
+```
+
+이 설정들은 참고용이며, 다른 방식으로 구현해도 무방합니다.
+
+프로젝트를 본인의 GitHub 저장소에 업로드하여 진행해 주세요.
 
 ## 제출 방법
 
